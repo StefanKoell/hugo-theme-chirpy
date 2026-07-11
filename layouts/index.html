@@ -62,8 +62,9 @@
               {{ $lqip = printf `lqip="%s"` .lqip }}
             {{ end }}
           {{ else }}
-            {{ with ($post.Resources.ByType "image").GetMatch "*" }}
-              {{ $src = .RelPermalink }}
+            {{ $images := $post.Resources.ByType "image" }}
+            {{ if gt (len $images) 0 }}
+              {{ $src = (index $images 0).RelPermalink }}
             {{ end }}
           {{ end }}
 
