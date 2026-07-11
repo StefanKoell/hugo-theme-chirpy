@@ -41,36 +41,25 @@
 
   <div id="post-list" class="flex-grow-1 px-xl-1">
     {{ range $posts }}
-      {{ $post := . }}
       <article class="card-wrapper card">
         <a href="{{ .RelPermalink }}" class="post-preview row g-0 flex-md-row-reverse">
           {{ $card_body_col := "12" }}
-          {{ $src := "" }}
-          {{ $alt := printf "%s preview" $post.Title }}
-          {{ $lqip := "" }}
 
-          {{ with $post.Params.image }}
-            {{ $src = .path | default . }}
+          {{ if .Params.image }}
+            {{ $src := .Params.image.path | default .Params.image }}
             {{ if not (findRE "//" $src) }}
-              {{ with $post.Resources.GetMatch $src }}
-                {{ $src = .RelPermalink }}
-              {{ end }}
+              {{ $src = .Resources.GetMatch ( .Params.image.path | default .Params.image ) }}
+              {{ $src = $src.RelPermalink }}
             {{ end }}
 
-            {{ $alt = .alt | default $alt }}
-            {{ if .lqip }}
-              {{ $lqip = printf `lqip="%s"` .lqip }}
+            {{ $alt := .Params.image.alt | default "Preview Image" | htmlEscape }}
+            {{ $lqip := "" }}
+            {{ if .Params.image.lqip }}
+              {{ $lqip = printf `lqip="%s"` .Params.image.lqip }}
             {{ end }}
-          {{ else }}
-            {{ $images := $post.Resources.ByType "image" }}
-            {{ if gt (len $images) 0 }}
-              {{ $src = (index $images 0).RelPermalink }}
-            {{ end }}
-          {{ end }}
 
-          {{ if $src }}
             <div class="col-md-5">
-              <img src="{{ $src }}" alt="{{ $alt | htmlEscape }}" {{ $lqip | safeHTMLAttr }}>
+              <img src="{{ $src }}" alt="{{ $alt }}" {{ $lqip | safeHTMLAttr }}>
             </div>
 
             {{ $card_body_col = "7" }}
